@@ -1,0 +1,36 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "usernameS" do |server|
+    server.vm.box = "ubuntu/bionic64"
+    server.vm.hostname = "usernameS"
+    server.vm.network "private_network", ip: "192.168.56.110"
+
+    # Set CPU and memory requirements
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"  # 512 MB RAM
+      vb.cpus = 1        # 1 CPU core
+    end
+
+    # Install K3s in controller mode
+    server.vm.provision "shell", inline: <<-SHELL
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--docker" sh -
+    SHELL
+  end
+
+  config.vm.define "usernameSW" do |worker|
+    worker.vm.box = "ubuntu/bionic64"
+    worker.vm.hostname = "usernameSW"
+    worker.vm.network "private_network", ip: "192.168.56.111"
+
+    # Set CPU and memory requirements
+    worker.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"  # 512 MB RAM
+      vb.cpus = 1        # 1 CPU core
+    end
+
+    # Install K3s in agent mode
+    worker.vm.provision "shell", inline: <<-SHELL
+      curl -sfL https://get.k3s.io | K3S_URL=https://192.168.56.110:6443 K3S_TOKEN=$(cat /var/lib/rancher/k3s/server/node-token) sh -
+    SHELL
+  end
+end
+

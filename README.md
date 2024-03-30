@@ -1,4 +1,4 @@
-[200~# To-Do List for Setting Up Vagrant and K3s
+# To-Do List for Setting Up Vagrant and K3s
 
 1. **Research and Learn about K3s**
    - Read documentation
